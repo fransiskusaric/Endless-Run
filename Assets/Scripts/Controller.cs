@@ -27,7 +27,7 @@ public class Controller : MonoBehaviour, IPointerClickHandler, IPointerDownHandl
         if (touchX < eventData.position.x)
         {
             // Swipe to right
-            if (PlayerController.main.characterModel.lane != CharacterModel.Lane.Right)
+            if (ControlPoint.main.characterModel.lane != CharacterModel.Lane.Right)
             {
                 EventManager.TriggerEvent("right");
             }
@@ -35,7 +35,7 @@ public class Controller : MonoBehaviour, IPointerClickHandler, IPointerDownHandl
         else if (touchX > eventData.position.x)
         {
             // Swipe to left
-            if (PlayerController.main.characterModel.lane != CharacterModel.Lane.Left)
+            if (ControlPoint.main.characterModel.lane != CharacterModel.Lane.Left)
             {
                 EventManager.TriggerEvent("left");
             }

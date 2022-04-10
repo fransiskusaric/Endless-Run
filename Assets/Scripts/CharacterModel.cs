@@ -18,7 +18,7 @@ public class CharacterModel : MonoBehaviour
 
     public float idleTime;
 
-    // =============== VARIABLE SWIPE METHOD DARI COACH ===============
+    // =============== SWIPE METHOD VARIABLE FROM COACH ===============
     /*
     public int pathIndex = 0;
     public float turnSpeed = 2.5f;
@@ -43,14 +43,14 @@ public class CharacterModel : MonoBehaviour
         Right
     }
 
-    private void Awake()
+    private void Awake() // Subscribe methods
     {
         EventManager.StartListening("jump", Jump);
         EventManager.StartListening("right", TurnRight);
         EventManager.StartListening("left", TurnLeft);
     }
 
-    private void OnDestroy()
+    private void OnDestroy() // Unsubscribe methods
     {
         EventManager.StopListening("jump", Jump);
         EventManager.StopListening("right", TurnRight);
@@ -79,7 +79,7 @@ public class CharacterModel : MonoBehaviour
                     TriggerAnimation("idleTrigger");
 
                     idleTime = 4;
-                    PlayerController.main.cdText.gameObject.SetActive(true);
+                    ControlPoint.main.cdText.gameObject.SetActive(true);
 
                     StartCoroutine(SmoothTranlation(transform, transform.parent.position, turnDuration, () => { print("fix position"); }));
                 }
@@ -90,20 +90,20 @@ public class CharacterModel : MonoBehaviour
         if (idleTime > 1)
         {
             idleTime -= Time.deltaTime;
-            PlayerController.main.cdText.text = (int)idleTime + "";
+            ControlPoint.main.cdText.text = (int)idleTime + "";
             if (idleTime <= 1)
             {
                 if (state != State.Running)
                 {
                     state = State.Running;
                     TriggerAnimation("runTrigger");
-                    PlayerController.main.cdText.gameObject.SetActive(false);
+                    ControlPoint.main.cdText.gameObject.SetActive(false);
                 }
             }
         }
     }
 
-    // =============== SWIPE METHOD DARI COACH ===============
+    // =============== SWIPE METHOD FROM COACH ===============
     /*
     private void Update()
     {
@@ -138,23 +138,12 @@ public class CharacterModel : MonoBehaviour
     }
 
     public void Jump()
-    {
-        /*
-        if (state != State.Jumping)
-        {
-            ChangeState(State.Jumping);
-            GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpPower, 0));
-            animator.SetTrigger("jumpTrigger");
-        }
-        */
-        // =============== CARA COACH LIMIT JUMP ===============
-        
+    {        
         if (rb.velocity.y == 0 && state == State.Running)
         {
             rb.AddForce(new Vector3(0, jumpPower, 0));
             TriggerAnimation("jumpTrigger");
-        }
-        
+        }        
     }
 
     public void TurnRight()
@@ -175,21 +164,13 @@ public class CharacterModel : MonoBehaviour
             Transform parent = transform.parent.transform;
             Vector3 target;
             SwitchLane(lane, () => {
-                target = Switching();
+                target = GetLanePosition();
                 StartCoroutine(SmoothTranlation(parent, target * pathSpacing, turnDuration, () => {
                     if (state == State.Running)
                         ChangeState(State.Running);
                     isTurning = false;
                 }));
             });
-            /*
-            StartCoroutine(SmoothTranlation(parent, parent.position + direction * pathSpacing, turnDuration, () => { 
-                SwitchLane(lane, () => {
-                    if (state == State.Running)
-                        ChangeState(State.Running);
-                }); 
-            }));
-            */
         }
     }
 
@@ -219,7 +200,7 @@ public class CharacterModel : MonoBehaviour
         OnSwitchComplete();
     }
 
-    private Vector3 Switching()
+    private Vector3 GetLanePosition()
     {
         switch (lane)
         {
@@ -239,7 +220,7 @@ public class CharacterModel : MonoBehaviour
         //print("State: " + state);
     }
 
-    // =============== SWIPE METHOD DARI COACH ===============
+    // =============== SWIPE METHOD FROM COACH ===============
     /*
     public void Turn(int direction)
     {
@@ -270,7 +251,7 @@ public class CharacterModel : MonoBehaviour
         {
             other.gameObject.SetActive(false);
             score++;
-            PlayerController.main.scoreTxt.text = score.ToString();
+            ControlPoint.main.scoreTxt.text = score.ToString();
         }
     }
 
@@ -279,6 +260,6 @@ public class CharacterModel : MonoBehaviour
         ChangeState(State.Backward);
         currBackwardTime = backwardTime;
 
-        PlayerController.main.bgTile.ClearObjects(PlayerController.main.bgTile.transform.GetChild(0));
+        ControlPoint.main.bgTile.ClearObjects(ControlPoint.main.bgTile.transform.GetChild(0));
     }
 }

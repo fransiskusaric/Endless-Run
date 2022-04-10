@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class PlayerController : MonoBehaviour
+public class ControlPoint : MonoBehaviour
 {
     [Header("General References")]
     public CharacterModel characterModel;
@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
     public Text scoreTxt;
     public TextMeshProUGUI cdText;
 
-    public static PlayerController main;
+    public static ControlPoint main;
 
     private void Awake()
     {

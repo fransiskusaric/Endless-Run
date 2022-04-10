@@ -17,7 +17,7 @@ public class BackgroundTileMove : MonoBehaviour
 
         for (int i = 0; i < transform.childCount; i++)
         {
-            GameObject obj = Instantiate(transform.GetChild(i).gameObject, PlayerController.main.bgPool);
+            GameObject obj = Instantiate(transform.GetChild(i).gameObject, ControlPoint.main.bgPool);
             obj.SetActive(false);
         }
     }
@@ -25,7 +25,7 @@ public class BackgroundTileMove : MonoBehaviour
     private void Update()
     {
         // Running
-        if (PlayerController.main.characterModel.state == CharacterModel.State.Running)
+        if (ControlPoint.main.characterModel.state == CharacterModel.State.Running)
         {
             for (int i = 0; i < transform.childCount; i++)
             {
@@ -33,7 +33,7 @@ public class BackgroundTileMove : MonoBehaviour
                 tile.position += Vector3.back * speed * Time.deltaTime;
                 if (tile.position.z < -10)
                 {
-                    // Cara lama: tidak random                    
+                    // Not random
                     //tile.position += new Vector3(0, 0, 60);
                     //tile.SetAsLastSibling();
 
@@ -41,15 +41,15 @@ public class BackgroundTileMove : MonoBehaviour
                     //SpawnObjects(tile);
                     
 
-                    // Cara baru: random (pakai pooling)
-                    // 1. Kembalikan background yg sampai blkng ke pool
-                    tile.parent = PlayerController.main.bgPool;
+                    // Random (use pooling system)
+                    // 1. Return the last tile to the pool
+                    tile.parent = ControlPoint.main.bgPool;
                     tile.gameObject.SetActive(false);
                     ClearObjects(tile);
 
-                    // 2. Ambil background tile scr acak dari pool, diletakkan di paling depan. Child terakhir berada di paling depan scene.
-                    int childIndex = Random.Range(0, PlayerController.main.bgPool.childCount);
-                    tile = PlayerController.main.bgPool.GetChild(childIndex);
+                    // 2. Take tile from the pool randomly
+                    int childIndex = Random.Range(0, ControlPoint.main.bgPool.childCount);
+                    tile = ControlPoint.main.bgPool.GetChild(childIndex);
                     tile.position = transform.GetChild(transform.childCount - 1).position + 10 * Vector3.forward;
                     tile.parent = transform;
                     tile.gameObject.SetActive(true);
@@ -63,7 +63,7 @@ public class BackgroundTileMove : MonoBehaviour
         }
 
         // Backward running
-        else if (PlayerController.main.characterModel.state == CharacterModel.State.Backward)
+        else if (ControlPoint.main.characterModel.state == CharacterModel.State.Backward)
         {
             for (int i = 0; i < transform.childCount; i++)
             {
@@ -89,7 +89,7 @@ public class BackgroundTileMove : MonoBehaviour
         }
 
         // Reduce speed when falling
-        if (PlayerController.main.characterModel.state == CharacterModel.State.Falling)
+        if (ControlPoint.main.characterModel.state == CharacterModel.State.Falling)
         {
             if (!isFalling)
             {
@@ -112,33 +112,33 @@ public class BackgroundTileMove : MonoBehaviour
     
     public void SpawnObjects(Transform tile)
     {
-        // Spawn obstacle
+        // Spawn obstacles
         int obstaclePath = Random.Range(-1, 2);
-        if (PlayerController.main.obstaclePool.childCount > 0)
+        if (ControlPoint.main.obstaclePool.childCount > 0)
         {
-            int childIndex = Random.Range(0, PlayerController.main.obstaclePool.childCount);
-            Transform obj = PlayerController.main.obstaclePool.GetChild(childIndex); // Get random obstacle
+            int childIndex = Random.Range(0, ControlPoint.main.obstaclePool.childCount);
+            Transform obj = ControlPoint.main.obstaclePool.GetChild(childIndex); // Get random obstacle
             obj.parent = tile.GetChild(0); // Refer to ObstacleContainer
-            obj.localPosition = new Vector3(PlayerController.main.characterModel.pathSpacing * obstaclePath, 0.2f, 0);
+            obj.localPosition = new Vector3(ControlPoint.main.characterModel.pathSpacing * obstaclePath, 0.2f, 0);
             obj.gameObject.SetActive(true);
         }
 
-        // Spawn coin
+        // Spawn coins
         bool doubleSpawn = Random.Range(0, 100) < 25;
         if (doubleSpawn)
         {
             for (int i = -1; i <= 1; i++)
             {
-                if (i != obstaclePath && PlayerController.main.coinPool.childCount > 0)
+                if (i != obstaclePath && ControlPoint.main.coinPool.childCount > 0)
                 {
-                    Transform obj = PlayerController.main.coinPool.GetChild(0); // Get coin
+                    Transform obj = ControlPoint.main.coinPool.GetChild(0); // Get coin
                     obj.parent = tile.GetChild(1); // Refer to CoinContainer
-                    obj.localPosition = new Vector3(PlayerController.main.characterModel.pathSpacing * i, 0, 0);
+                    obj.localPosition = new Vector3(ControlPoint.main.characterModel.pathSpacing * i, 0, 0);
                     obj.gameObject.SetActive(true);
                 }
             }
         }
-        else if (PlayerController.main.coinPool.childCount > 0)
+        else if (ControlPoint.main.coinPool.childCount > 0)
         {
             int coinPath = 0;
             if (obstaclePath == -1)
@@ -158,9 +158,9 @@ public class BackgroundTileMove : MonoBehaviour
                 if (Random.Range(0, 100) < 50)
                     coinPath = -1;
             }
-            Transform obj = PlayerController.main.coinPool.GetChild(0);
+            Transform obj = ControlPoint.main.coinPool.GetChild(0);
             obj.parent = tile.GetChild(1);
-            obj.localPosition = new Vector3(PlayerController.main.characterModel.pathSpacing * coinPath, 0, 0);
+            obj.localPosition = new Vector3(ControlPoint.main.characterModel.pathSpacing * coinPath, 0, 0);
             obj.gameObject.SetActive(true);
         }
     }
@@ -171,7 +171,7 @@ public class BackgroundTileMove : MonoBehaviour
         while (tile.GetChild(0).childCount > 0)
         {
             Transform obj = tile.GetChild(0).GetChild(0);
-            obj.parent = PlayerController.main.obstaclePool;
+            obj.parent = ControlPoint.main.obstaclePool;
             obj.gameObject.SetActive(false);
         }
 
@@ -179,7 +179,7 @@ public class BackgroundTileMove : MonoBehaviour
         while (tile.GetChild(1).childCount > 0)
         {
             Transform obj = tile.GetChild(1).GetChild(0);
-            obj.parent = PlayerController.main.coinPool;
+            obj.parent = ControlPoint.main.coinPool;
             obj.gameObject.SetActive(false);
 
             // Reactivate individual coin
